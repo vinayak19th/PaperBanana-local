@@ -116,10 +116,12 @@ def main():
     
     # 6. General Models
     if config["LLM_BACKEND"] == "gemini":
-        if(os.getenv("GOOGLE_API_KEY")==""):
-            config["GOOGLE_API_KEY"] = get_input("Enter Google API Key", config.get("GOOGLE_API_KEY", ""))
-        else:
-            config["GOOGLE_API_KEY"] = os.getenv("GOOGLE_API_KEY")
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            print("\n[WARNING] GOOGLE_API_KEY not found in environment variables.")
+            print("Please add it to your .env file or export it as an environment variable.")
+            print("Example: GOOGLE_API_KEY=your_key_here")
+        
         config["VLM_MODEL"] = get_input("Gemini VLM Model", config.get("VLM_MODEL", "gemini-3-pro-preview"))
         config["IMAGE_MODEL"] = get_input("Gemini Image Model", config.get("IMAGE_MODEL", "imagen-3.0-generate-001"))
     

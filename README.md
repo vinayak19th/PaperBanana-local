@@ -26,40 +26,50 @@ Codebase to generate scientific diagrams from text descriptions.
     GOOGLE_API_KEY=your_api_key_here
     ```
 
-## Configuration & Supported Models
+## Configuration Guide
 
-Paperbanana is highly configurable. You can choose different LLM backends (Gemini/Ollama) and output formats (Image/Draw.io).
-
-### Interactive Configuration (Recommended)
-
-The easiest way to configure Paperbanana is using the interactive configuration tool. It will prompt you for all necessary settings:
+Paperbanana is highly configurable, allowing you to balance diagram quality, execution speed, and privacy. The easiest way to configure the system is using the interactive tool:
 
 ```bash
 python configure.py
 ```
 
-This tool allows you to:
-- Set your **Google API Key**.
-- Choose between **Gemini** and **Ollama** backends.
-- Choose between **Image** (PNG) and **Draw.io** (Vector/XML) output.
-- Configure specific **Ollama models** (Text, VLM, Image).
-- Set the path to your **draw.io executable** (required for Draw.io mode).
+### 1. LLM Backend
+This choice determines which AI models will be used for reasoning, planning, and image generation.
 
-Settings are saved to `config.json` and persist across runs.
+| Backend | Best For | Requirement |
+| :--- | :--- | :--- |
+| **Google Gemini** | Highest quality, complex reasoning, and state-of-the-art image generation. | `GOOGLE_API_KEY` (set via `.env`) |
+| **LocalAI** | Privacy-focused, local execution, and avoiding API costs/limits. | LocalAI server (running via Docker) |
 
-### Backends
+> [!TIP]
+> **Our Recommendation:** Use **Gemini** for the best scientific accuracy and aesthetic results. Use **LocalAI** if you need to run entirely offline or have privacy constraints.
 
-#### 1. Google Gemini (Default)
-Recommended for highest quality. Requires a `GOOGLE_API_KEY`.
-- **VLM Model:** default `gemini-3-pro-preview`
-- **Image Model:** default `imagen-3.0-generate-001`
+### 2. Output Format
+This determines how the final diagram is produced.
 
-#### 2. Ollama (Local)
-Run models locally via Ollama. 
-- **OLLAMA_VLM_MODEL:** The single model used for all text reasoning (planning, styling) and vision tasks (critiquing). Example: `llava`.
-- **OLLAMA_IMAGE_MODEL:** Experimental placeholders for image generation.
+*   **Image (PNG):** Directly generates a final raster image.
+    *   *Pros:* Fast, easy to use, handles complex artistic styles.
+    *   *Cons:* Not easily editable after generation.
+*   **Draw.io (Vector/XML):** Generates an editable `.drawio` XML file.
+    *   *Pros:* Fully editable, supports LaTeX for math formulas, resolution-independent (vector).
+    *   *Cons:* Requires the Draw.io desktop app for rendering during refinement.
 
-*Note: The agents now automatically use the globally configured model for the selected backend, simplifying per-agent model management.*
+### 3. Backend Specifics
+
+#### LocalAI Integration
+If you choose the `localai` backend, you will be prompted for:
+- **Base URL:** The URL where your LocalAI instance is reachable (default: `http://localhost:8080/v1`).
+- **Text/VLM Model:** The model for reasoning (e.g., `gemma-3-12b-it`).
+- **Image Model:** The model for generating the visual sketch (e.g., `flux-2-klein`).
+
+#### Gemini Integration
+- **VLM Model:** Default `gemini-3-pro-preview`.
+- **Image Model:** Default `imagen-3.0-generate-001`.
+
+> [!NOTE]
+> Settings are saved to `config.json` and persist across runs. Environment-sensitive variables like `GOOGLE_API_KEY` should be placed in your `.env` file instead.
+
 
 ### Draw.io Generation
 

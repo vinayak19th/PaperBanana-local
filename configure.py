@@ -43,8 +43,8 @@ def install_models():
         base_url = base_url[:-3]
         
     models_to_install = {
-        "gemma-3-12b-it": "huggingface://bartowski/gemma-3-12b-it-GGUF/gemma-3-12b-it-Q4_K_M.gguf",
-        "flux-2-klein": "huggingface://unsloth/FLUX.2-klein-4B-GGUF/FLUX.2-klein-4B-Q4_K_M.gguf"
+        "gemma-3-12b-it": "huggingface://unsloth/gemma-3-12b-it-GGUF/gemma-3-12b-it-Q4_K_M.gguf",
+        "flux-2-klein": "huggingface://city96/FLUX.1-dev-gguf/flux1-dev-Q2_K.gguf"
     }
     
     print(f"\nAttempting to install: {', '.join(models_to_install.keys())}")

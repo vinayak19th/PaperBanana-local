@@ -1,0 +1,1 @@
+Our proposed method, Transformer-XH, extends the original Transformer architecture. It consists of a multi-head self-attention mechanism, followed by a feed-forward network. We introduce a novel cross-hierarchy attention layer that connects different levels of the hierarchy.

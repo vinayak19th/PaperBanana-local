@@ -64,55 +64,91 @@ class GeminiClient(BaseClient):
     def get_client(self):
         return self.client
 
-class OllamaClient(BaseClient):
+class LocalAIClient(BaseClient):
     def __init__(self):
-        self.base_url = config.OLLAMA_BASE_URL
-        self.model = config.OLLAMA_MODEL
+        self.base_url = config.LOCALAI_BASE_URL
+        self.model = config.LOCALAI_MODEL
+        self.image_model = config.LOCALAI_IMAGE_MODEL
 
     def generate_text(self, prompt: str, model: str = None) -> str:
-        model = model or self.model
-        url = f"{self.base_url}/generate"
+        url = f"{self.base_url}/chat/completions"
+        selected_model = model or self.model
         
-        # Handle list input (text + image) for multimodal
-        images = []
-        actual_prompt = prompt
+        messages = []
         
-        if isinstance(prompt, list):
-            # Assumes list is [text_prompt, image_input]
-            # Simple handling for now - robust implementation would parse this better
-            actual_prompt = ""
+        if isinstance(prompt, str):
+            messages.append({"role": "user", "content": prompt})
+        elif isinstance(prompt, list):
+            # Handle multimodal input (Text + Image)
+            content = []
             for item in prompt:
                 if isinstance(item, str):
-                    actual_prompt += item + "\n"
+                    content.append({"type": "text", "text": item})
                 elif isinstance(item, Image.Image):
-                    # Convert PIL image to base64
                     buffered = io.BytesIO()
                     item.save(buffered, format="PNG")
                     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
-                    images.append(img_str)
-        
+                    content.append({
+                        "type": "image_url", 
+                        "image_url": {"url": f"data:image/png;base64,{img_str}"}
+                    })
+            messages.append({"role": "user", "content": content})
+
         data = {
-            "model": model,
-            "prompt": actual_prompt,
-            "stream": False,
-            "images": images
+            "model": selected_model,
+            "messages": messages,
+            "stream": False
         }
         
         try:
             response = requests.post(url, json=data)
             response.raise_for_status()
-            return response.json().get("response", "")
+            return response.json()["choices"][0]["message"]["content"]
         except Exception as e:
-            print(f"Ollama text generation error: {e}")
+            print(f"LocalAI text generation error: {e}")
+            if 'response' in locals():
+                print(f"Response: {response.text}")
             return ""
 
     def generate_image(self, prompt: str, model: str = None) -> Optional[Image.Image]:
-        print("Warning: Ollama client does not support image generation natively yet. Returning None.")
-        return None
+        url = f"{self.base_url}/images/generations"
+        selected_model = model or self.image_model
+        
+        data = {
+            "model": selected_model,
+            "prompt": prompt,
+            "n": 1,
+            "size": "512x512" # Default, maybe configurable?
+        }
+        
+        try:
+            response = requests.post(url, json=data)
+            response.raise_for_status()
+            
+            # OpenAI API returns url or b64_json
+            # LocalAI typically matches OpenAI
+            data = response.json()
+            if "data" in data and len(data["data"]) > 0:
+                img_data = data["data"][0]
+                if "url" in img_data:
+                    # Depending on setup, this URL might be local container URL.
+                    # Ideally we want b64_json if possible, or we fetch the URL.
+                    return Image.open(requests.get(img_data["url"], stream=True).raw)
+                if "b64_json" in img_data:
+                    return Image.open(io.BytesIO(base64.b64decode(img_data["b64_json"])))
+            
+            print(f"Unexpected image response format: {data}")
+            return None
+            
+        except Exception as e:
+            print(f"LocalAI image generation error: {e}")
+            if 'response' in locals():
+                print(f"Response: {response.text}")
+            return None
 
 def get_client() -> BaseClient:
-    if config.LLM_BACKEND == "ollama":
-        return OllamaClient()
+    if config.LLM_BACKEND == "localai":
+        return LocalAIClient()
     return GeminiClient()
 
 client_instance = get_client()

@@ -1,0 +1,7 @@
+{
+    "LLM_BACKEND": "localai",
+    "OUTPUT_FORMAT": "image",
+    "LOCALAI_BASE_URL": "http://localhost:8080/v1",
+    "LOCALAI_MODEL": "gemma-3-12b-it",
+    "LOCALAI_IMAGE_MODEL": "flux-2-klein"
+}

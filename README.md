@@ -1,13 +1,17 @@
-# Paperbanana
+> Unofficial local implementation of [Dawei Zhu, undefined., et al, "PaperBanana: Automating Academic Illustration for AI Scientists," 2026.](https://arxiv.org/abs/2601.23265)
 
-Paperbanana is a simplified implementation of a multi-agent AI system designed to generate scientific diagrams from text descriptions. It orchestrates several specialized agents (Retriever, Planner, Stylist, Visualizer, Critic) to iteratively refine and generate high-quality visual outputs.
+# Paperbanana
+Codebase to generate scientific diagrams from text descriptions. 
+
+
+**Disclaimer:** This project is for research purposes. Generated diagrams should be manually reviewed for scientific correctness.
 
 ## Setup
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url>
-    cd paperbanana_ocal
+    https://github.com/vinayak19th/PaperBanana-local.git
+    cd PaperBanana-local
     ```
 
 2.  **Install dependencies:**

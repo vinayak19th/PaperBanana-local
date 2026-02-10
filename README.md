@@ -28,47 +28,67 @@ Codebase to generate scientific diagrams from text descriptions.
 
 ## Configuration & Supported Models
 
-Paperbanana supports two backends: **Google Gemini** (default) and **Ollama** (for local models).
+Paperbanana is highly configurable. You can choose different LLM backends (Gemini/Ollama) and output formats (Image/Draw.io).
 
-You can configure the backend using environment variables in your `.env` file or by exporting them in your shell.
+### Interactive Configuration (Recommended)
 
-### 1. Google Gemini (Default)
+The easiest way to configure Paperbanana is using the interactive configuration tool. It will prompt you for all necessary settings:
 
-This is the recommended backend for the highest quality results, especially for image generation.
+```bash
+python configure.py
+```
 
--   **Required Env Var:** `GOOGLE_API_KEY`
--   **Backend Setting:** `LLM_BACKEND="gemini"` (default)
--   **Recommended Models:**
-    -   Text/Planning: `gemini-1.5-pro-latest` or `gemini-1.5-flash`
-    -   Image Generation: `imagen-3.0-generate-001`
+This tool allows you to:
+- Set your **Google API Key**.
+- Choose between **Gemini** and **Ollama** backends.
+- Choose between **Image** (PNG) and **Draw.io** (Vector/XML) output.
+- Configure specific **Ollama models** (Text, VLM, Image).
+- Set the path to your **draw.io executable** (required for Draw.io mode).
 
-### 2. Ollama (Local)
+Settings are saved to `config.json` and persist across runs.
 
-Use this backend to run open-weights models locally.
-**Note:** Image generation is currently mocked/not supported directly via Ollama in this implementation.
+### Backends
 
--   **Backend Setting:** `LLM_BACKEND="ollama"`
--   **Base URL:** `OLLAMA_BASE_URL="http://localhost:11434/v1"` (default)
--   **Model:** `OLLAMA_MODEL="llama3"` (default)
+#### 1. Google Gemini (Default)
+Recommended for highest quality. Requires a `GOOGLE_API_KEY`.
+- **VLM Model:** default `gemini-3-pro-preview`
+- **Image Model:** default `imagen-3.0-generate-001`
 
-**Recommended Local Models:**
--   `llama3`: Good balance of speed and performance.
--   `mistral`: Strong alternative for reasoning.
--   `gemma`: Google's open weights model.
+#### 2. Ollama (Local)
+Run models locally via Ollama. 
+- **OLLAMA_VLM_MODEL:** The single model used for all text reasoning (planning, styling) and vision tasks (critiquing). Example: `llava`.
+- **OLLAMA_IMAGE_MODEL:** Experimental placeholders for image generation.
 
-To run Ollama:
-1.  Install Ollama from [ollama.com](https://ollama.com).
-2.  Pull a model: `ollama pull llama3`.
-3.  Start the server: `ollama serve`.
+*Note: The agents now automatically use the globally configured model for the selected backend, simplifying per-agent model management.*
+
+### Draw.io Generation
+
+Paperbanana can generate editable `.drawio` XML files with LaTeX support. 
+To use this:
+1. Run `python configure.py`.
+2. Set **Output Format** to `drawio`.
+3. Provide the path to your Draw.io executable (e.g., `drawio-x86_64.AppImage` on Linux).
+
+---
+
 
 ## Usage
 
 ### Basic Usage
 
-Run the main script to generate a diagram from the default or hardcoded input:
-
 ```bash
-python main.py
+python main.py -h                                                                   
+usage: main.py [-h] --input INPUT [--caption CAPTION] --output OUTPUT [--iterations ITERATIONS]
+
+PaperBanana: Automated Academic Illustration
+
+options:
+  -h, --help            show this help message and exit
+  --input INPUT         Path to input text file containing methodology description.
+  --caption CAPTION     Caption for the diagram.
+  --output OUTPUT       Path to save the final output image.
+  --iterations ITERATIONS
+                        Number of refinement iterations.
 ```
 
 ### Parallel Batch Execution
@@ -88,8 +108,13 @@ pipeline.generate_batch(inputs)
 
 ## Architecture
 
--   **Retriever:** Fetches relevant reference examples.
--   **Planner:** Creates a detailed textual description.
+Paperbanana follows a multi-agent pipeline:
+
+-   **Retriever:** Fetches relevant reference examples to guide the style and content.
+-   **Planner:** Creates a detailed textual description of the diagram.
 -   **Stylist:** Refines the description for aesthetic compliance (e.g., NeurIPS style).
--   **Visualizer:** Generates the image (currently via Imagen 3 on Gemini backend).
--   **Critic:** Reviews the generated image and provides improvement suggestions.
+-   **Visualizer / SketchGenerator:** Generates the initial visual (Image or Prototype Sketch).
+-   **DrawIOBuilder:** (Draw.io mode) Generates editable XML with LaTeX support.
+-   **Renderer:** (Draw.io mode) Renders XML to image using local CLI for feedback.
+-   **Critic / DiagramCritic:** Reviews the generated output and provides improvement suggestions.
+

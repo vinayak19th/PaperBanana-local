@@ -1,9 +1,12 @@
 {
-    "LLM_BACKEND": "gemini",
+    "LLM_BACKEND": "open-web-ui",
     "OUTPUT_FORMAT": "image",
     "LOCALAI_BASE_URL": "http://localhost:8080/v1",
     "LOCALAI_MODEL": "gemma-3-12b-it",
     "LOCALAI_IMAGE_MODEL": "flux-2-klein",
     "VLM_MODEL": "gemini-2.5-pro",
-    "IMAGE_MODEL": "imagen-3.0-generate-001"
+    "IMAGE_MODEL": "imagen-3.0-generate-001",
+    "OPENWEBUI_BASE_URL": "https://ai-lab.tail8befb3.ts.net/api",
+    "OPENWEBUI_MODEL": "gemma3:12b-it-qat",
+    "OPENWEBUI_IMAGE_MODEL": "flux-2-klein-4b"
 }

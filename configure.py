@@ -61,7 +61,7 @@ def main():
     # 5. Open WebUI Specifics (if needed)
     if config["LLM_BACKEND"] == "open-web-ui":
         config["OPENWEBUI_BASE_URL"] = get_input("Open WebUI Base URL", config.get("OPENWEBUI_BASE_URL", "https://ai-lab.tail8befb3.ts.net/api"))
-        config["OPENWEBUI_MODEL"] = get_input("Open WebUI Model", config.get("OPENWEBUI_MODEL", "gemma:12b"))
+        config["OPENWEBUI_MODEL"] = get_input("Open WebUI Model", config.get("OPENWEBUI_MODEL", "gemma3:12b-it-qat"))
         config["OPENWEBUI_IMAGE_MODEL"] = get_input("Open WebUI Image Model", config.get("OPENWEBUI_IMAGE_MODEL", "flux-2-klein-4b"))
     
     # 6. General Models

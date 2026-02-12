@@ -40,10 +40,11 @@ This choice determines which AI models will be used for reasoning, planning, and
 | Backend | Best For | Requirement |
 | :--- | :--- | :--- |
 | **Google Gemini** | Highest quality, complex reasoning, and state-of-the-art image generation. | `GOOGLE_API_KEY` (set via `.env`) |
-| **LocalAI** | Privacy-focused, local execution, and avoiding API costs/limits. | LocalAI server (running via Docker) |
+| **Google Gemini** | Highest quality, complex reasoning, and state-of-the-art image generation. | `GOOGLE_API_KEY` (set via `.env`) |
+| **Open WebUI** | Privacy-focused, local execution, and avoiding API costs/limits. | Open WebUI instance (e.g., via Docker or Tailscale) |
 
 > [!TIP]
-> **Our Recommendation:** Use **Gemini** for the best scientific accuracy and aesthetic results. Use **LocalAI** if you need to run entirely offline or have privacy constraints.
+> **Our Recommendation:** Use **Gemini** for the best scientific accuracy and aesthetic results. Use **Open WebUI** if you need to run entirely offline or have privacy constraints.
 
 ### 2. Output Format
 This determines how the final diagram is produced.
@@ -57,11 +58,11 @@ This determines how the final diagram is produced.
 
 ### 3. Backend Specifics
 
-#### LocalAI Integration
-If you choose the `localai` backend, you will be prompted for:
-- **Base URL:** The URL where your LocalAI instance is reachable (default: `http://localhost:8080/v1`).
-- **Text/VLM Model:** The model for reasoning (e.g., `gemma-3-12b-it`).
-- **Image Model:** The model for generating the visual sketch (e.g., `flux-2-klein`).
+#### Open WebUI Integration
+If you choose the `open-web-ui` backend, you will be prompted for:
+- **Base URL:** The URL where your Open WebUI instance is reachable (default: `https://ai-lab.tail8befb3.ts.net/api`).
+- **Text model:** The model for reasoning (e.g., `gemma:12b`).
+- **Image Model:** The model for generating the visual sketch (e.g., `flux-2-klein-4b`).
 
 #### Gemini Integration
 - **VLM Model:** Default `gemini-3-pro-preview`.

@@ -32,10 +32,10 @@ class Config:
         # LLM Backend
         self.LLM_BACKEND = os.getenv("LLM_BACKEND", file_config.get("LLM_BACKEND", "gemini")) # "gemini" or "ollama"
         
-        # LocalAI settings
-        self.LOCALAI_BASE_URL = os.getenv("LOCALAI_BASE_URL", file_config.get("LOCALAI_BASE_URL", "http://localhost:8080/v1"))
-        self.LOCALAI_MODEL = os.getenv("LOCALAI_MODEL", file_config.get("LOCALAI_MODEL", "gemma-3-12b-it"))
-        self.LOCALAI_IMAGE_MODEL = os.getenv("LOCALAI_IMAGE_MODEL", file_config.get("LOCALAI_IMAGE_MODEL", "flux-2-klein"))
+        # Open WebUI settings
+        self.OPENWEBUI_BASE_URL = os.getenv("OPENWEBUI_BASE_URL", file_config.get("OPENWEBUI_BASE_URL", "https://ai-lab.tail8befb3.ts.net/api"))
+        self.OPENWEBUI_MODEL = os.getenv("OPENWEBUI_MODEL", file_config.get("OPENWEBUI_MODEL", "gemma:12b"))
+        self.OPENWEBUI_IMAGE_MODEL = os.getenv("OPENWEBUI_IMAGE_MODEL", file_config.get("OPENWEBUI_IMAGE_MODEL", "flux-2-klein-4b"))
 
 
 

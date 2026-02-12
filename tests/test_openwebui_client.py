@@ -2,17 +2,17 @@ import unittest
 from unittest.mock import MagicMock, patch
 import json
 import base64
-from paperbanana.client import LocalAIClient
+from paperbanana.client import OpenWebUIClient
 from paperbanana.config import config
 from PIL import Image
 import io
 
-class TestLocalAIClient(unittest.TestCase):
+class TestOpenWebUIClient(unittest.TestCase):
     def setUp(self):
-        config.LOCALAI_BASE_URL = "http://mock-localai:8080/v1"
-        config.LOCALAI_MODEL = "gemma-3-12b-it"
-        config.LOCALAI_IMAGE_MODEL = "flux-2-klein"
-        self.client = LocalAIClient()
+        config.OPENWEBUI_BASE_URL = "http://mock-openwebui:3000/api"
+        config.OPENWEBUI_MODEL = "gemma:12b"
+        config.OPENWEBUI_IMAGE_MODEL = "flux-2-klein-4b"
+        self.client = OpenWebUIClient()
 
     @patch('requests.post')
     def test_generate_text_simple(self, mock_post):
@@ -30,8 +30,8 @@ class TestLocalAIClient(unittest.TestCase):
         
         # Verify Request
         args, kwargs = mock_post.call_args
-        self.assertEqual(args[0], "http://mock-localai:8080/v1/chat/completions")
-        self.assertEqual(kwargs['json']['model'], "gemma-3-12b-it")
+        self.assertEqual(args[0], "http://mock-openwebui:3000/api/chat/completions")
+        self.assertEqual(kwargs['json']['model'], "gemma:12b")
         self.assertEqual(kwargs['json']['messages'][0]['content'], "Hello")
 
     @patch('requests.post')
@@ -84,8 +84,8 @@ class TestLocalAIClient(unittest.TestCase):
         
         # Verify Request
         args, kwargs = mock_post.call_args
-        self.assertEqual(args[0], "http://mock-localai:8080/v1/images/generations")
-        self.assertEqual(kwargs['json']['model'], "flux-2-klein")
+        self.assertEqual(args[0], "http://mock-openwebui:3000/api/images/generations")
+        self.assertEqual(kwargs['json']['model'], "flux-2-klein-4b")
         self.assertEqual(kwargs['json']['prompt'], "A blue square")
 
 if __name__ == '__main__':

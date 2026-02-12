@@ -64,11 +64,11 @@ class GeminiClient(BaseClient):
     def get_client(self):
         return self.client
 
-class LocalAIClient(BaseClient):
+class OpenWebUIClient(BaseClient):
     def __init__(self):
-        self.base_url = config.LOCALAI_BASE_URL
-        self.model = config.LOCALAI_MODEL
-        self.image_model = config.LOCALAI_IMAGE_MODEL
+        self.base_url = config.OPENWEBUI_BASE_URL
+        self.model = config.OPENWEBUI_MODEL
+        self.image_model = config.OPENWEBUI_IMAGE_MODEL
 
     def generate_text(self, prompt: str, model: str = None) -> str:
         url = f"{self.base_url}/chat/completions"
@@ -105,7 +105,7 @@ class LocalAIClient(BaseClient):
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
         except Exception as e:
-            print(f"LocalAI text generation error: {e}")
+            print(f"Open WebUI text generation error: {e}")
             if 'response' in locals():
                 print(f"Response: {response.text}")
             return ""
@@ -141,14 +141,14 @@ class LocalAIClient(BaseClient):
             return None
             
         except Exception as e:
-            print(f"LocalAI image generation error: {e}")
+            print(f"Open WebUI image generation error: {e}")
             if 'response' in locals():
                 print(f"Response: {response.text}")
             return None
 
 def get_client() -> BaseClient:
-    if config.LLM_BACKEND == "localai":
-        return LocalAIClient()
+    if config.LLM_BACKEND == "open-web-ui":
+        return OpenWebUIClient()
     return GeminiClient()
 
 client_instance = get_client()

@@ -32,58 +32,8 @@ def get_input(prompt, default=None):
         return val if val else default
     return input(f"{prompt}: ").strip()
 
-def install_models():
-    """Triggers model installation in LocalAI."""
-    print("\n" + "="*40)
-    print("LocalAI Model Installer")
-    print("="*40)
-    
-    base_url = get_input("LocalAI Base URL", "http://localhost:8080")
-    if base_url.endswith("/v1"):
-        base_url = base_url[:-3]
-        
-    models_to_install = {
-        "gemma-3-12b-it": "huggingface://unsloth/gemma-3-12b-it-GGUF/gemma-3-12b-it-Q4_K_M.gguf",
-        "flux-2-klein": "huggingface://city96/FLUX.1-dev-gguf/flux1-dev-Q2_K.gguf"
-    }
-    
-    print(f"\nAttempting to install: {', '.join(models_to_install.keys())}")
-    print(f"Target: {base_url}/models/apply")
-    
-    for name, uri in models_to_install.items():
-        print(f"\nInstalling {name}...")
-        try:
-            # Use /models/apply to install from a base configuration with a custom GGUF file
-            payload = {
-                "url": "github:mudler/LocalAI/gallery/base.yaml@master",
-                "name": name,
-                "files": [
-                    {
-                        "uri": uri,
-                        "filename": f"{name}.gguf"
-                    }
-                ]
-            }
-            
-            response = requests.post(f"{base_url}/models/apply", json=payload)
-            if response.status_code == 200:
-                job_id = response.json().get("uuid", "unknown")
-                print(f"[SUCCESS] Installation job created for {name}. Job UUID: {job_id}")
-                print(f"Check LocalAI logs for progress (docker logs paperbanana_localai).")
-            else:
-                print(f"[ERROR] Failed to trigger installation for {name}. Status: {response.status_code}, Response: {response.text}")
-        except Exception as e:
-            print(f"[ERROR] Connection failed: {e}")
-            print("Make sure LocalAI is running (docker-compose up -d).")
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--install-models", action="store_true", help="Trigger installation of default models in LocalAI")
-    args = parser.parse_args()
-    
-    if args.install_models:
-        install_models()
-        return
 
     print("="*40)
     print("Paperbanana Configuration Tool")
@@ -92,8 +42,8 @@ def main():
     config = load_config()
     
     # 2. LLM Backend
-    backend = get_input("Choose LLM Backend (gemini/localai)", config.get("LLM_BACKEND", "gemini"))
-    assert backend in ["gemini", "localai"], "Backend must be 'gemini' or 'localai'"
+    backend = get_input("Choose LLM Backend (gemini/open-web-ui)", config.get("LLM_BACKEND", "gemini"))
+    assert backend in ["gemini", "open-web-ui"], "Backend must be 'gemini' or 'open-web-ui'"
     config["LLM_BACKEND"] = backend
     
     # 3. Output Format
@@ -108,11 +58,11 @@ def main():
         else:
             config["DRAWIO_PATH"] = os.getenv("DRAWIO_PATH")
         
-    # 5. LocalAI Specifics (if needed)
-    if config["LLM_BACKEND"] == "localai":
-        config["LOCALAI_BASE_URL"] = get_input("LocalAI Base URL", config.get("LOCALAI_BASE_URL", "http://localhost:8080/v1"))
-        config["LOCALAI_MODEL"] = get_input("LocalAI Model (Text/VLM)", config.get("LOCALAI_MODEL", "gemma-3-12b-it"))
-        config["LOCALAI_IMAGE_MODEL"] = get_input("LocalAI Image Model", config.get("LOCALAI_IMAGE_MODEL", "flux-2-klein"))
+    # 5. Open WebUI Specifics (if needed)
+    if config["LLM_BACKEND"] == "open-web-ui":
+        config["OPENWEBUI_BASE_URL"] = get_input("Open WebUI Base URL", config.get("OPENWEBUI_BASE_URL", "https://ai-lab.tail8befb3.ts.net/api"))
+        config["OPENWEBUI_MODEL"] = get_input("Open WebUI Model", config.get("OPENWEBUI_MODEL", "gemma:12b"))
+        config["OPENWEBUI_IMAGE_MODEL"] = get_input("Open WebUI Image Model", config.get("OPENWEBUI_IMAGE_MODEL", "flux-2-klein-4b"))
     
     # 6. General Models
     if config["LLM_BACKEND"] == "gemini":

@@ -1,0 +1,37 @@
+{
+  "1": {
+    "inputs": {
+      "value": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "UnloadAllModels",
+    "_meta": {
+      "title": "UnloadAllModels"
+    }
+  },
+  "2": {
+    "inputs": {
+      "preview": "Unloading all models",
+      "previewMode": null,
+      "source": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "PreviewAny",
+    "_meta": {
+      "title": "Preview as Text"
+    }
+  },
+  "3": {
+    "inputs": {
+      "value": "Unloading all models"
+    },
+    "class_type": "PrimitiveString",
+    "_meta": {
+      "title": "String"
+    }
+  }
+}
